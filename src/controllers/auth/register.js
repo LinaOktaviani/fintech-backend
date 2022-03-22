@@ -2,7 +2,7 @@ const register = require('../../models/auth/register');
 const authValidator = require('../../validators/auth');
 const response = require('../../utils/response');
 const emailSender = require('../../utils/emailSender');
-const OTPGenerator = require('../../utils/otp_generator');
+const OTPGenerator = require('../../utils/OTPGenerator');
 const mustache = require('mustache');
 const fs = require('fs');
 const path = require('path');
@@ -20,8 +20,8 @@ module.exports = async (req, res) => {
       const code = await OTPGenerator(4);
       emailSender({
         to: email,
-        subject: 'Registration e-Money',
-        text: 'Thanks for your registration, here is your registration confirmation',
+        subject: "Registration e-Money",
+        text: 'Thanks for your registration, here is your registration confirmation' ,
         html: mustache.render(template, {
           email,
           code,
@@ -41,13 +41,7 @@ module.exports = async (req, res) => {
             .status(201)
             .send(response(true, registerValidator.msg, registeredUser));
         })
-        .catch(async (error) => {
-          const registeredUser = await register({
-            email,
-            password: bcrypt.hashSync(password, 12),
-            otp: code,
-          });
-
+        .catch((error) => {
           if (error) {
             res.status(500).send(response(false, 'Error email server'));
           } else {
